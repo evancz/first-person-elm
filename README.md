@@ -1,9 +1,11 @@
 # First Person Navigation in 3D
 
 Make sure you have the latest version of Chrome or Firefox and then click the
-following image to try it out:
+following image to try out the [live demo][demo]:
 
-<a href="http://evancz.github.io/first-person-elm/">![Live Demo](ScreenShot.png)</a>
+[![Live Demo](ScreenShot.png)][demo]
+
+[demo]: http://evancz.github.io/first-person-elm/
 
 Walk around with WASD and jump with SPACE. When you go into full-screen mode,
 you can turn your head with the mouse.
