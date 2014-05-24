@@ -1,4 +1,4 @@
-# First Person Navigation in Elm
+# First Person Navigation in Elm - [Live Demo](http://evancz.github.io/first-person-elm/)
 
 Walk around with WASD and jump with SPACE. When you go into full-screen mode,
 you can turn your head with the mouse.
