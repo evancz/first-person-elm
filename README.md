@@ -5,7 +5,7 @@ following image to try out the **[live demo][demo]**. Walk around with WASD and
 jump with SPACE. When you go into full-screen mode, you can turn your head with
 the mouse.
 
-[![Live Demo](ScreenShot.png)][demo]
+[![Live Demo](resources/ScreenShot.png)][demo]
 
 [demo]: http://evancz.github.io/first-person-elm/
 
