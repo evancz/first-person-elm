@@ -2667,7 +2667,7 @@ Elm.Main.make = function (_elm) {
    Model.defaultPerson,
    inputs);
    var main = function () {
-      var texture = Graphics.WebGL.loadTexture("/resources/woodCrate.jpg");
+      var texture = Graphics.WebGL.loadTexture("resources/woodCrate.jpg");
       return A5(Signal.lift4,
       Display.scene,
       Window.dimensions,
@@ -2805,11 +2805,10 @@ Elm.Display.make = function (_elm) {
                                                         140,
                                                         A2(Graphics.Element.midLeftAt,
                                                         Graphics.Element.absolute(40),
-                                                        Graphics.Element.relative(0.5)))(Text.plainText(_L.append("Walk around with a first person perspective.\n",
-                                                        _L.append("WASD keys to move, space bar to jump.\n\n",
-                                                        isLocked ? "Press <escape> to exit full screen." : "Click to go full screen and navigate with your mouse."))))]));}
+                                                        Graphics.Element.relative(0.5)))(Text.plainText(_L.append("WASD keys to move, space bar to jump.\n\n",
+                                                        isLocked ? "Press <escape> to exit full screen." : "Click to go full screen and move your head with the mouse.")))]));}
          _E.Case($moduleName,
-         "between lines 20 and 28");
+         "between lines 20 and 27");
       }();
    });
    _elm.Display.values = {_op: _op
