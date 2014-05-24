@@ -1,12 +1,13 @@
-# First Person Navigation in 3D
+# First Person 3D Navigation in Elm
 
 Make sure you have the latest version of Chrome or Firefox and then click the
-following image to try it out:
+following image to try out the **[live demo][demo]**. Walk around with WASD and
+jump with SPACE. When you go into full-screen mode, you can turn your head with
+the mouse.
 
-<a href="http://evancz.github.io/first-person-elm/">![Live Demo](ScreenShot.png)</a>
+[![Live Demo](resources/ScreenShot.png)][demo]
 
-Walk around with WASD and jump with SPACE. When you go into full-screen mode,
-you can turn your head with the mouse.
+[demo]: http://evancz.github.io/first-person-elm/
 
 The goals of this project are:
 
@@ -42,7 +43,5 @@ And then open [http://localhost:8000](http://localhost:8000) to see it in action
   * Make it possible to jump onto boxes
   * Try to generate interesting shapes to add to the world
   * Procedurally generate terrain
-
-Or change it up entirely!
 
 [skybox]: http://en.wikipedia.org/wiki/Skybox_(video_games)
