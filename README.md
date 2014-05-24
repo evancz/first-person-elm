@@ -1,4 +1,4 @@
-# First Person Navigation in 3D
+# First Person 3D Navigation in Elm
 
 Make sure you have the latest version of Chrome or Firefox and then click the
 following image to try out the [live demo][demo]:
