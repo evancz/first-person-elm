@@ -25,7 +25,7 @@ person = foldp Update.step Model.defaultPerson inputs
 
 main : Signal Element
 main =
-  let texture = loadTexture "/resources/woodCrate.jpg"
+  let texture = loadTexture "resources/woodCrate.jpg"
   in  lift4 Display.scene Window.dimensions isLocked texture person
 
 -- Ability to request and exit. Click screen to request lock. Press escape to
