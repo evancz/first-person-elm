@@ -20,11 +20,10 @@ scene (w,h) isLocked texture person =
     layers [ color (rgb 135 206 235) (spacer w h)
            , webgl (w,h) (entities texture (view (w,h) person))
            , container w 140 (midLeftAt (absolute 40) (relative 0.5)) . plainText <|
-               "Walk around with a first person perspective.\n" ++
                "WASD keys to move, space bar to jump.\n\n" ++
                if isLocked
                   then "Press <escape> to exit full screen."
-                  else "Click to go full screen and navigate with your mouse."
+                  else "Click to go full screen and move your head with the mouse."
            ]
 
 entities : Response Texture -> Mat4 -> [Entity]
