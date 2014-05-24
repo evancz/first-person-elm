@@ -2805,7 +2805,7 @@ Elm.Display.make = function (_elm) {
                                                         140,
                                                         A2(Graphics.Element.midLeftAt,
                                                         Graphics.Element.absolute(40),
-                                                        Graphics.Element.relative(0.5)))(Text.plainText(_L.append("WASD keys to move, space bar to jump.\n\n",
+                                                        Graphics.Element.relative(0.5)))(Text.plainText(_L.append("This uses stuff that is only available in Chrome and Firefox!\n\nWASD keys to move, space bar to jump.\n\n",
                                                         isLocked ? "Press <escape> to exit full screen." : "Click to go full screen and move your head with the mouse.")))]));}
          _E.Case($moduleName,
          "between lines 20 and 27");
