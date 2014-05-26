@@ -28,7 +28,7 @@ scene (w,h) isLocked texture person =
 
 entities : Response Texture -> Mat4 -> [Entity]
 entities response view =
-    let crate' = case response of
+    let crates = case response of
                    Success texture ->
                        [ crate texture view
                        , crate texture (translate3  10 0  10 view)
@@ -36,4 +36,4 @@ entities response view =
                        ]
                    _ -> []
     in  
-        ground view :: crate'
+        ground view :: crates
