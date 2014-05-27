@@ -1,19 +1,19 @@
 module Main where
 
-import Mouse
+import Graphics.WebGL (..)
 import Keyboard
+import Mouse
 import Window
 
 import Model
 import Update
 import Display
-import Graphics.WebGL (..)
 
 -- Pointer Lock information
 port movement : Signal (Int,Int)
 port isLocked : Signal Bool
 
--- Do stuff with pointer lock
+-- Set up 3D world
 inputs : Signal Model.Inputs
 inputs =
   let dt = lift (\t -> t/500) (fps 40)
