@@ -16,7 +16,7 @@ port isLocked : Signal Bool
 -- Set up 3D world
 inputs : Signal Model.Inputs
 inputs =
-  let dt = lift (\t -> t/500) (fps 40)
+  let dt = lift (\t -> t/500) (fps 60)
   in  merge (sampleOn dt <| lift3 Model.TimeDelta Keyboard.space Keyboard.wasd dt)
             (Model.Mouse <~ movement)
 
