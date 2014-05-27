@@ -1,8 +1,12 @@
 # First Person 3D Navigation in Elm
 
-First-person navigation in a simple 3D world, written in Elm. It ends up being
-really simple when you have [FRP](http://elm-lang.org/learn/What-is-FRP.elm) and
-the [`elm-webgl`](https://github.com/johnpmayer/elm-webgl) library!
+First-person navigation in a simple 3D world, written in Elm. The code ended up
+extremely short and simple thanks to [FRP][frp], [`elm-webgl`][webgl], and Elm's
+[easy interop with JS][interop]!
+
+[frp]: http://elm-lang.org/learn/What-is-FRP.elm
+[webgl]: https://github.com/johnpmayer/elm-webgl
+[interop]: https://github.com/evancz/elm-html-and-js
 
 Make sure you have the latest version of Chrome or Firefox and then click the
 following image to try out the **[live demo][demo]**:
@@ -11,22 +15,27 @@ following image to try out the **[live demo][demo]**:
 
 [demo]: http://evancz.github.io/first-person-elm/
 
-The goals of this project are:
+Without a specialized 3D framework, just [the basic WebGL bindings][webgl], this
+took about [300 lines of Elm][src]. I tried to keep the code super simple so it
+is easy to fork and build cooler stuff! This project is also architected to
+scale nicely as you add more entities.
 
-  1. Use the fullscreen and [Pointer Lock][lock] APIs with Elm to fully control
-     the mouse.
+[src]: https://github.com/evancz/first-person-elm/tree/master/src
 
-  2. Experiment with "Port Handlers" that automatically set up useful ports,
-     done in [this file][file] in a fairly general and reuseable way. Perhaps
-     we can find general patters in code like this.
-
-  3. Keep the code super simple so it is easy to fork this and begin to build
-     cooler stuff!
+We needed an additional [~95 lines of JS][file] to use the experimental
+fullscreen and [Pointer Lock][lock] APIs. This is an experiment in setting up
+[ports][interop] in a general and reusable way. The goal is a general "Port
+Handler" pattern that lets you pipe signals out to JS to use some native API or
+have some side-effect. I hope we can iterate on this idea to make it even
+simpler for Elm code to interact with JS!
 
 [lock]: https://developer.mozilla.org/en-US/docs/WebAPI/Pointer_Lock
 [file]: https://github.com/evancz/first-person-elm/blob/master/resources/PointerLock.js
 
 ## Build Locally
+
+After installing [the Elm Platform](https://github.com/elm-lang/elm-platform),
+run the following sequence of commands:
 
 ```bash
 git clone https://github.com/evancz/first-person-elm.git
