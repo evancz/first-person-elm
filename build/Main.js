@@ -2651,7 +2651,7 @@ Elm.Main.make = function (_elm) {
       function (t) {
          return t / 500;
       },
-      Time.fps(40));
+      Time.fps(60));
       return A2(Signal.merge,
       Signal.sampleOn(dt)(A4(Signal.lift3,
       Model.TimeDelta,
@@ -2726,7 +2726,7 @@ Elm.Display.make = function (_elm) {
    var entities = F2(function (response,
    view) {
       return function () {
-         var crate$ = function () {
+         var crates = function () {
             switch (response.ctor)
             {case "Success":
                return _L.fromArray([A2(Display.Crate.crate,
@@ -2750,7 +2750,7 @@ Elm.Display.make = function (_elm) {
          }();
          return {ctor: "::"
                 ,_0: Display.World.ground(view)
-                ,_1: crate$};
+                ,_1: crates};
       }();
    });
    var view = F2(function (_v2,
@@ -3231,7 +3231,7 @@ Elm.Update.make = function (_elm) {
                  person);
               }();}
          _E.Case($moduleName,
-         "between lines 26 and 31");
+         "between lines 25 and 30");
       }();
    });
    var flatten = function (v) {
