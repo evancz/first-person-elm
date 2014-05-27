@@ -18,8 +18,7 @@ step inputs person =
 flatten : Vec3 -> Vec3
 flatten v =
     let r = toRecord v
-    in
-        normalize (vec3 r.x 0 r.z)
+    in  normalize (vec3 r.x 0 r.z)
 
 turn : (Int,Int) -> Model.Person -> Model.Person
 turn (dx,dy) person =
