@@ -2723,6 +2723,13 @@ Elm.Display.make = function (_elm) {
    var Text = Elm.Text.make(_elm);
    var Time = Elm.Time.make(_elm);
    var _op = {};
+   var message = function (msg) {
+      return Text.plainText(_L.append("This uses stuff that is only available in Chrome and Firefox!\n",
+      _L.append("\nWASD keys to move, space bar to jump.\n\n",
+      msg)));
+   };
+   var exitMsg = message("Press <escape> to exit full screen.");
+   var enterMsg = message("Click to go full screen and move your head with the mouse.");
    var entities = F2(function (response,
    view) {
       return function () {
@@ -2800,15 +2807,15 @@ Elm.Display.make = function (_elm) {
                                                         ,_0: _v6._0
                                                         ,_1: _v6._1},
                                                         person)))
-                                                        ,A3(Graphics.Element.container,
+                                                        ,A4(Graphics.Element.container,
                                                         _v6._0,
                                                         140,
                                                         A2(Graphics.Element.midLeftAt,
                                                         Graphics.Element.absolute(40),
-                                                        Graphics.Element.relative(0.5)))(Text.plainText(_L.append("This uses stuff that is only available in Chrome and Firefox!\n\nWASD keys to move, space bar to jump.\n\n",
-                                                        isLocked ? "Press <escape> to exit full screen." : "Click to go full screen and move your head with the mouse.")))]));}
+                                                        Graphics.Element.relative(0.5)),
+                                                        isLocked ? exitMsg : enterMsg)]));}
          _E.Case($moduleName,
-         "between lines 20 and 27");
+         "between lines 20 and 24");
       }();
    });
    _elm.Display.values = {_op: _op
