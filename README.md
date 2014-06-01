@@ -49,10 +49,12 @@ And then open [http://localhost:8000](http://localhost:8000) to see it in action
 
 ## Possible Extensions
 
+  * [Use more exciting textures](https://github.com/kfish/elm-shadertoy)
   * Add a [skybox][skybox]
   * Make it possible to crouch
   * Add collisions with boxes
   * Make it possible to jump onto boxes
   * Try to generate interesting shapes to add to the world
   * Procedurally generate terrain
+
 [skybox]: http://en.wikipedia.org/wiki/Skybox_(video_games)
