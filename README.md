@@ -41,8 +41,8 @@ run the following sequence of commands:
 git clone https://github.com/evancz/first-person-elm.git
 cd first-person-elm
 elm-get install
-elm --make --only-js --src-dir=src Main.elm
-elm-server
+elm --make --only-js --bundle-runtime --src-dir=src Main.elm
+elm-reactor
 ```
 
 And then open [http://localhost:8000](http://localhost:8000) to see it in action!
