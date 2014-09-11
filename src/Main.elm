@@ -32,10 +32,10 @@ main =
 -- give up the lock. This code can all be removed if you want to do this
 -- differently.
 
-port requestPointerLock : Signal ()
+port requestPointerLock : Signal Bool
 port requestPointerLock =
-    dropWhen (lift2 (&&) Keyboard.shift isLocked) () Mouse.clicks
+    always True <~ dropWhen (lift2 (&&) Keyboard.shift isLocked) () Mouse.clicks
 
-port exitPointerLock : Signal ()
+port exitPointerLock : Signal Bool
 port exitPointerLock =
-    always () <~ keepIf (any (\x -> x == 27)) [] Keyboard.keysDown
+    always True <~ keepIf (any (\x -> x == 27)) [] Keyboard.keysDown
