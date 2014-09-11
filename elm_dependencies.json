@@ -6,8 +6,8 @@
     "exposed-modules": [],
     "elm-version": "0.12.3",
     "dependencies": {
-        "johnpmayer/elm-webgl": "0.1",
-        "johnpmayer/elm-linear-algebra": "1.0"
+        "johnpmayer/elm-webgl": "0.1.1",
+        "johnpmayer/elm-linear-algebra": "1.0.1"
     },
     "repository": "https://github.com/USER/PROJECT.git"
 }
