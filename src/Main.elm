@@ -1,41 +1,94 @@
-module Main where
+module Main (main) where
 
-import Graphics.WebGL (..)
+import Effects
+import Html
 import Keyboard
+import Model
 import Mouse
+import StartApp
+import Task
+import Time
+import Update
+import View
 import Window
 
-import Model
-import Update
-import Display
 
--- Pointer Lock information
-port movement : Signal (Int,Int)
-port isLocked : Signal Bool
+{-| Regularly sample the keyboard and window to provide a Signal of TimeDelta actions.
+-}
+keyboard : Signal Model.Action
+keyboard =
+  Signal.map4
+    (\isJumping direction dimensions dt ->
+      Model.TimeDelta isJumping direction dimensions dt
+    )
+    Keyboard.space
+    (Signal.merge
+      Keyboard.arrows
+      Keyboard.wasd
+    )
+    Window.dimensions
+    dt
+    |> Signal.sampleOn dt
 
--- Set up 3D world
-inputs : Signal Model.Inputs
-inputs =
-  let dt = lift (\t -> t/500) (fps 60)
-  in  merge (sampleOn dt <| lift3 Model.TimeDelta Keyboard.space Keyboard.wasd dt)
-            (Model.Mouse <~ movement)
 
-person : Signal Model.Person
-person = foldp Update.step Model.defaultPerson inputs
+{-| A signal of Mouse actions, derived from relevant mouse position signals
+while in fullscreen
+-}
+mouse : Signal Model.Action
+mouse =
+  Signal.map Model.Mouse movement
 
-main : Signal Element
+
+{-| A signal of time deltas
+-}
+dt : Signal Float
+dt =
+  Signal.map (\t -> t / 500) (Time.fps 60)
+
+
+{-| The StartApp `app` function
+-}
+app : StartApp.App Model.Model
+app =
+  StartApp.start
+    { init = ( Model.initModel, View.fetchTexture )
+    , update = Update.update
+    , view = View.view
+    , inputs = [ keyboard, mouse ]
+    }
+
+
+{-| The Elm entrypoint
+-}
+main : Signal Html.Html
 main =
-  let texture = loadTexture "resources/woodCrate.jpg"
-  in  lift4 Display.scene Window.dimensions isLocked texture person
+  app.html
 
--- Ability to request and exit. Click screen to request lock. Press escape to
--- give up the lock. This code can all be removed if you want to do this
--- differently.
 
+{-| Port for processing `Task`s. The only tasks being generated in this app
+are from the initial fetch of the crate texture.
+-}
+port tasks : Signal (Task.Task Effects.Never ())
+port tasks =
+  app.tasks
+
+
+{-| Ability to request and exit. Click screen to request lock. Press escape to
+give up the lock. This code can all be removed if you want to do this
+differently.
+-}
 port requestPointerLock : Signal ()
 port requestPointerLock =
-    dropWhen (lift2 (&&) Keyboard.shift isLocked) () Mouse.clicks
+  Mouse.clicks
+
 
 port exitPointerLock : Signal ()
 port exitPointerLock =
-    always () <~ keepIf (any (\x -> x == 27)) [] Keyboard.keysDown
+  Keyboard.isDown 27
+    |> Signal.map (\_ -> ())
+
+
+{-| Pointer Lock information
+-}
+port movement : Signal ( Int, Int )
+port isLocked : Signal Bool
