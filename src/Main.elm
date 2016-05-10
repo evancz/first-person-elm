@@ -31,12 +31,17 @@ keyboard =
     |> Signal.sampleOn dt
 
 
-{-| A signal of Mouse actions, derived from relevant mouse position signals
+{-| A signal of Mouse actions, derived from mouse position signals
 while in fullscreen
 -}
 mouse : Signal Model.Action
 mouse =
   Signal.map Model.Mouse movement
+
+
+changeLock : Signal Model.Action
+changeLock =
+  Signal.map Model.IsLocked isLocked
 
 
 {-| A signal of time deltas
@@ -54,7 +59,7 @@ app =
     { init = ( Model.initModel, View.fetchTexture )
     , update = Update.update
     , view = View.view
-    , inputs = [ keyboard, mouse ]
+    , inputs = [ keyboard, mouse, changeLock ]
     }
 
 
@@ -73,9 +78,10 @@ port tasks =
   app.tasks
 
 
-{-| Ability to request and exit. Click screen to request lock. Press escape to
-give up the lock. This code can all be removed if you want to do this
-differently.
+{-| These outgoing Signals provide the ability to request and exit fullscreen mode.
+Click screen to request lock. Press escape to give up the lock.
+
+This code can all be removed if you want to do this differently.
 -}
 port requestPointerLock : Signal ()
 port requestPointerLock =
@@ -88,7 +94,8 @@ port exitPointerLock =
     |> Signal.map (\_ -> ())
 
 
-{-| Pointer Lock information
+{-| These incoming `Signal`s provide information pass on events to Elm while
+the user is entering/in/leaving fullscreen mode
 -}
 port movement : Signal ( Int, Int )
 port isLocked : Signal Bool

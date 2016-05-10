@@ -28,6 +28,9 @@ update action model =
 
         TextureLoaded maybeTexture ->
           { model | maybeTexture = maybeTexture }
+
+        IsLocked isLocked ->
+          { model | isLocked = isLocked }
   in
     ( newModel, Effects.none )
 

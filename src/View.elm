@@ -26,17 +26,17 @@ fetchTexture =
 {-| generate a View from a Model
 -}
 view : Signal.Address Model.Action -> Model.Model -> Html.Html
-view address { person, maybeWindow, maybeTexture } =
+view address { person, isLocked, maybeWindow, maybeTexture } =
   Html.fromElement
-    <| case ( person, maybeWindow, maybeTexture ) of
-        ( _, Nothing, _ ) ->
-          message ""
+    <| case ( person, isLocked, maybeWindow, maybeTexture ) of
+        ( _, _, Nothing, _ ) ->
+          message "Loading..."
 
-        ( _, _, Nothing ) ->
-          message ""
+        ( _, _, _, Nothing ) ->
+          message "Loading..."
 
-        ( person, Just ( w, h ), Just texture ) ->
-          layoutScene ( w, h ) False texture person
+        ( person, isLocked, Just ( w, h ), Just texture ) ->
+          layoutScene ( w, h ) isLocked texture person
 
 
 layoutScene : ( Int, Int ) -> Bool -> WebGL.Texture -> Model.Person -> Element

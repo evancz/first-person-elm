@@ -1,4 +1,4 @@
-module Model (WindowDimensions, Action(TimeDelta, Mouse, TextureLoaded), Model, Person, initModel, eyeLevel, direction) where
+module Model (WindowDimensions, Action(..), Model, Person, initModel, eyeLevel, direction) where
 
 import Math.Vector3 exposing (Vec3, vec3)
 import WebGL
@@ -20,12 +20,14 @@ type Action
   = TimeDelta Bool { x : Int, y : Int } WindowDimensions Float
   | Mouse WindowDimensions
   | TextureLoaded (Maybe WebGL.Texture)
+  | IsLocked Bool
 
 
 {-| This is the applications's Model data structure
 -}
 type alias Model =
   { person : Person
+  , isLocked : Bool
   , maybeWindow : Maybe WindowDimensions
   , maybeTexture : Maybe WebGL.Texture
   }
@@ -36,7 +38,6 @@ type alias Person =
   , velocity : Vec3
   , horizontalAngle : Float
   , verticalAngle : Float
-  , message : String
   }
 
 
@@ -49,8 +50,8 @@ initModel =
       , velocity = vec3 0 0 0
       , horizontalAngle = degrees 90
       , verticalAngle = 0
-      , message = "No texture yet"
       }
+  , isLocked = False
   , maybeWindow = Nothing
   , maybeTexture = Nothing
   }
