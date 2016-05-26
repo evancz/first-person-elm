@@ -1,94 +1,71 @@
-module Main (main) where
+module Main exposing (main)
 
-import Effects
-import Html
+import Model exposing (..)
+import Update exposing (..)
+import View exposing (..)
+import AnimationFrame
 import Keyboard
-import Model
-import Mouse
-import StartApp
-import Task
-import Time
-import Update
-import View
 import Window
-
-
-{-| Regularly sample the keyboard and window to provide a Signal of TimeDelta actions.
--}
-keyboard : Signal Model.Action
-keyboard =
-  Signal.map4
-    (\isJumping direction dimensions dt ->
-      Model.TimeDelta isJumping direction dimensions dt
-    )
-    Keyboard.space
-    (Signal.merge
-      Keyboard.arrows
-      Keyboard.wasd
-    )
-    Window.dimensions
-    dt
-    |> Signal.sampleOn dt
+import Html.App as Html
+import Mouse
 
 
 {-| A signal of Mouse actions, derived from relevant mouse position signals
 while in fullscreen
 -}
-mouse : Signal Model.Action
-mouse =
-  Signal.map Model.Mouse movement
+mouseMove : Mouse.Position -> Msg
+mouseMove =
+    MouseMove
 
 
-{-| A signal of time deltas
+{-| Regularly sample the keyboard and window to provide a Signal of TimeDelta actions.
 -}
-dt : Signal Float
-dt =
-  Signal.map (\t -> t / 500) (Time.fps 60)
+keyChange : Bool -> Keyboard.KeyCode -> Msg
+keyChange on keyCode =
+    (case keyCode of
+        32 ->
+            \k -> { k | space = on }
+
+        37 ->
+            \k -> { k | left = on }
+
+        39 ->
+            \k -> { k | right = on }
+
+        38 ->
+            \k -> { k | up = on }
+
+        40 ->
+            \k -> { k | down = on }
+
+        _ ->
+            Basics.identity
+    )
+        |> KeyChange
 
 
-{-| The StartApp `app` function
--}
-app : StartApp.App Model.Model
-app =
-  StartApp.start
-    { init = ( Model.initModel, View.fetchTexture )
-    , update = Update.update
-    , view = View.view
-    , inputs = [ keyboard, mouse ]
-    }
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    [ AnimationFrame.diffs Animate
+    , Keyboard.downs (keyChange True)
+    , Keyboard.ups (keyChange False)
+    , Window.resizes Resize
+    ]
+        ++ (if model.isLocked then
+                [ Mouse.moves MouseMove ]
+            else
+                []
+           )
+        |> Sub.batch
 
 
 {-| The Elm entrypoint
 -}
-main : Signal Html.Html
+main : Program Never
 main =
-  app.html
-
-
-{-| Port for processing `Task`s. The only tasks being generated in this app
-are from the initial fetch of the crate texture.
--}
-port tasks : Signal (Task.Task Effects.Never ())
-port tasks =
-  app.tasks
-
-
-{-| Ability to request and exit. Click screen to request lock. Press escape to
-give up the lock. This code can all be removed if you want to do this
-differently.
--}
-port requestPointerLock : Signal ()
-port requestPointerLock =
-  Mouse.clicks
-
-
-port exitPointerLock : Signal ()
-port exitPointerLock =
-  Keyboard.isDown 27
-    |> Signal.map (\_ -> ())
-
-
-{-| Pointer Lock information
--}
-port movement : Signal ( Int, Int )
-port isLocked : Signal Bool
+    Html.program
+        { init = init
+        , view = view
+        , subscriptions = subscriptions
+        , update = update
+        }
