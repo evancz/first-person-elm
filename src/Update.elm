@@ -1,11 +1,12 @@
 module Update exposing (update)
 
-import Model exposing (..)
+import Ports
+import Model
 import Math.Vector3 as Vector3 exposing (Vec3, toRecord, normalize, vec3, getY, getX, getZ, setY, add, toTuple, i, j, k, scale)
 import Math.Matrix4 exposing (makeRotate, transform)
 
 
-directions : Keys -> { x : Int, y : Int }
+directions : Model.Keys -> { x : Int, y : Int }
 directions { left, right, up, down } =
     let
         direction a b =
@@ -33,7 +34,7 @@ flatten v =
         normalize (vec3 r.x 0 r.z)
 
 
-turn : ( Int, Int ) -> Person -> Person
+turn : ( Int, Int ) -> Model.Person -> Model.Person
 turn ( dx, dy ) person =
     let
         h' =
@@ -48,14 +49,14 @@ turn ( dx, dy ) person =
         }
 
 
-walk : { x : Int, y : Int } -> Person -> Person
+walk : { x : Int, y : Int } -> Model.Person -> Model.Person
 walk directions person =
-    if getY person.position > eyeLevel then
+    if getY person.position > Model.eyeLevel then
         person
     else
         let
             moveDir =
-                normalize (flatten (direction person))
+                normalize (flatten (Model.direction person))
 
             strafeDir =
                 transform (makeRotate (degrees -90) j) moveDir
@@ -79,9 +80,9 @@ adjustVelocity v =
             scale 2 (normalize v)
 
 
-jump : Bool -> Person -> Person
+jump : Bool -> Model.Person -> Model.Person
 jump isJumping person =
-    if not isJumping || getY person.position > eyeLevel then
+    if not isJumping || getY person.position > Model.eyeLevel then
         person
     else
         let
@@ -91,7 +92,7 @@ jump isJumping person =
             { person | velocity = vec3 v.x 2 v.z }
 
 
-physics : Float -> Person -> Person
+physics : Float -> Model.Person -> Model.Person
 physics dt person =
     let
         position =
@@ -101,17 +102,17 @@ physics dt person =
             toRecord position
 
         position' =
-            if p.y < eyeLevel then
-                vec3 p.x eyeLevel p.z
+            if p.y < Model.eyeLevel then
+                vec3 p.x Model.eyeLevel p.z
             else
                 position
     in
         { person | position = position' }
 
 
-gravity : Float -> Person -> Person
+gravity : Float -> Model.Person -> Model.Person
 gravity dt person =
-    if getY person.position <= eyeLevel then
+    if getY person.position <= Model.eyeLevel then
         person
     else
         let
@@ -121,32 +122,57 @@ gravity dt person =
             { person | velocity = vec3 v.x (v.y - 2 * dt) v.z }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Model.Msg -> Model.Model -> ( Model.Model, Cmd Model.Msg )
 update msg model =
-    ( case msg of
-        TextureError err ->
-            { model | message = "Error loading texture" }
+    case msg of
+        Model.TextureError err ->
+            ( { model | message = "Error loading texture" }
+            , Cmd.none
+            )
 
-        TextureLoaded texture ->
-            { model | maybeTexture = Just texture }
+        Model.TextureLoaded texture ->
+            ( { model | maybeTexture = Just texture }
+            , Cmd.none
+            )
 
-        KeyChange keyfunc ->
-            { model | keys = keyfunc model.keys }
+        Model.KeyChange keyfunc ->
+            ( { model | keys = keyfunc model.keys }
+            , Cmd.none
+            )
 
-        Resize windowSize ->
-            { model | maybeWindowSize = Just windowSize }
+        Model.Resize windowSize ->
+            ( { model | maybeWindowSize = Just windowSize }
+            , Cmd.none
+            )
 
-        Model.MouseMove position ->
-            model
+        Model.MouseMove movement ->
+            ( { model | person = turn movement model.person }
+            , Cmd.none
+            )
 
-        Animate dt ->
-            { model
+        Model.LockRequest wantToBeLocked ->
+            ( { model | wantToBeLocked = wantToBeLocked }
+            , if model.wantToBeLocked == model.isLocked then
+                Cmd.none
+              else if model.wantToBeLocked then
+                Ports.requestPointerLock ()
+              else
+                Ports.exitPointerLock ()
+            )
+
+        Model.LockUpdate isLocked ->
+            ( { model | isLocked = isLocked }
+            , Cmd.none
+            )
+
+        Model.Animate dt ->
+            ( { model
                 | person =
                     model.person
                         |> walk (directions model.keys)
                         |> jump model.keys.space
                         |> gravity (dt / 500)
                         |> physics (dt / 500)
-            }
-    , Cmd.none
-    )
+              }
+            , Cmd.none
+            )

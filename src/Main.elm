@@ -1,8 +1,9 @@
 module Main exposing (main)
 
-import Model exposing (..)
-import Update exposing (..)
-import View exposing (..)
+import Model
+import Update
+import View
+import Ports
 import AnimationFrame
 import Keyboard
 import Window
@@ -10,17 +11,9 @@ import Html.App as Html
 import Mouse
 
 
-{-| A signal of Mouse actions, derived from relevant mouse position signals
-while in fullscreen
--}
-mouseMove : Mouse.Position -> Msg
-mouseMove =
-    MouseMove
-
-
 {-| Regularly sample the keyboard and window to provide a Signal of TimeDelta actions.
 -}
-keyChange : Bool -> Keyboard.KeyCode -> Msg
+keyChange : Bool -> Keyboard.KeyCode -> Model.Msg
 keyChange on keyCode =
     (case keyCode of
         32 ->
@@ -41,20 +34,22 @@ keyChange on keyCode =
         _ ->
             Basics.identity
     )
-        |> KeyChange
+        |> Model.KeyChange
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : Model.Model -> Sub Model.Msg
 subscriptions model =
-    [ AnimationFrame.diffs Animate
+    [ AnimationFrame.diffs Model.Animate
     , Keyboard.downs (keyChange True)
     , Keyboard.ups (keyChange False)
-    , Window.resizes Resize
+    , Window.resizes Model.Resize
+    , Ports.isLocked Model.LockUpdate
+    , Keyboard.presses (\keyCode -> Model.LockRequest (keyCode == 27))
     ]
         ++ (if model.isLocked then
-                [ Mouse.moves MouseMove ]
+                [ Ports.movement Model.MouseMove ]
             else
-                []
+                [ Mouse.clicks (\_ -> Model.LockRequest True) ]
            )
         |> Sub.batch
 
@@ -64,8 +59,8 @@ subscriptions model =
 main : Program Never
 main =
     Html.program
-        { init = init
-        , view = view
+        { init = Model.init
+        , view = View.view
         , subscriptions = subscriptions
-        , update = update
+        , update = Update.update
         }

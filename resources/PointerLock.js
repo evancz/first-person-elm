@@ -1,12 +1,12 @@
 (function() {
 
-Elm.embedWithPointerLock = function(module, div, args) {
-    var component = Elm.embed(module, div, initArgs(args));
+Elm.Main.embedWithPointerLock = function(div, args) {
+    var component = Elm.Main.embed(div, initArgs(args));
     return setup(component, div);
 }
 
-Elm.fullscreenWithPointerLock = function(module, args) {
-    var component = Elm.fullscreen(module, initArgs(args));
+Elm.Main.fullscreenWithPointerLock = function(args) {
+    var component = Elm.Main.fullscreen(initArgs(args));
     return setup(component, document.body);
 }
 
