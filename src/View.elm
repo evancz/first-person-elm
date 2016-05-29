@@ -1,8 +1,5 @@
 module View exposing (view)
 
-import Color
-import Element exposing (Element, layers, container, Position, midLeftAt, absolute, relative, leftAligned, color, spacer, show)
-import Text
 import Html
 import Math.Matrix4 exposing (makePerspective, mul, makeLookAt, makeRotate, transform, Mat4, translate3)
 import Math.Vector3 exposing (Vec3, vec3, getY, toTuple, add, toRecord, i, j, k, scale)
@@ -10,7 +7,8 @@ import Model
 import View.Crate
 import View.Ground
 import WebGL
-import Html exposing (Html)
+import Html exposing (Html, text, div, p)
+import Html.Attributes exposing (width, height, style)
 import Model exposing (Model, Msg)
 import Window
 
@@ -19,26 +17,39 @@ import Window
 -}
 view : Model -> Html Msg
 view { person, maybeWindowSize, maybeTexture, isLocked } =
-    Element.toHtml
-        <| case ( maybeWindowSize, maybeTexture ) of
-            ( Nothing, _ ) ->
-                message ""
+    case ( maybeWindowSize, maybeTexture ) of
+        ( Nothing, _ ) ->
+            text ""
 
-            ( _, Nothing ) ->
-                message ""
+        ( _, Nothing ) ->
+            text ""
 
-            ( Just windowSize, Just texture ) ->
-                layoutScene windowSize isLocked texture person
+        ( Just windowSize, Just texture ) ->
+            layoutScene windowSize isLocked texture person
 
 
-layoutScene : Window.Size -> Bool -> WebGL.Texture -> Model.Person -> Element
-layoutScene ({ width, height } as windowSize) isLocked texture person =
-    layers
-        [ color (Color.rgb 135 206 235) (spacer width height)
-        , WebGL.webgl ( width, height ) (renderWorld texture (perspective windowSize person))
-        , container width
-            140
-            (midLeftAt (absolute 40) (relative 0.5))
+layoutScene : Window.Size -> Bool -> WebGL.Texture -> Model.Person -> Html Msg
+layoutScene windowSize isLocked texture person =
+    div
+        [ style
+            [ ( "width", toString width ++ "px" )
+            , ( "height", toString height ++ "px" )
+            , ( "position", "relative" )
+            , ( "backgroundColor", "rgb(135, 206, 235)" )
+            ]
+        ]
+        [ WebGL.toHtml [ width windowSize.width, height windowSize.height, style [ ( "display", "block" ) ] ]
+            (renderWorld texture (perspective windowSize person))
+        , div
+            [ style
+                [ ( "position", "absolute" )
+                , ( "font-family", "monospace" )
+                , ( "text-align", "center" )
+                , ( "left", "20px" )
+                , ( "right", "20px" )
+                , ( "top", "20px" )
+                ]
+            ]
             (if isLocked then
                 exitMsg
              else
@@ -69,29 +80,19 @@ perspective { width, height } person =
         (makeLookAt person.position (person.position `add` Model.direction person) j)
 
 
-{-| Constant function describing the initial position of the viewer
--}
-position : Position
-position =
-    midLeftAt (absolute 40) (relative 0.5)
-
-
-enterMsg : Element
+enterMsg : List (Html Msg)
 enterMsg =
     message "Click to go full screen and move your head with the mouse."
 
 
-exitMsg : Element
+exitMsg : List (Html Msg)
 exitMsg =
     message "Press <escape> to exit full screen."
 
 
-message : String -> Element
+message : String -> List (Html Msg)
 message msg =
-    Element.flow Element.down
-        (List.map (Text.fromString >> Element.leftAligned)
-            [ "This uses stuff that is only available in Chrome and Firefox!"
-            , "WASD keys to move, space bar to jump."
-            , msg
-            ]
-        )
+    [ p [] [ Html.text "This uses stuff that is only available in Chrome and Firefox!" ]
+    , p [] [ Html.text "WASD keys to move, space bar to jump." ]
+    , p [] [ Html.text msg ]
+    ]
