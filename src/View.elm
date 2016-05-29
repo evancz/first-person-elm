@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Color
 import Element exposing (Element, layers, container, Position, midLeftAt, absolute, relative, leftAligned, color, spacer, show)
+import Text
 import Html
 import Math.Matrix4 exposing (makePerspective, mul, makeLookAt, makeRotate, transform, Mat4, translate3)
 import Math.Vector3 exposing (Vec3, vec3, getY, toTuple, add, toRecord, i, j, k, scale)
@@ -87,7 +88,10 @@ exitMsg =
 
 message : String -> Element
 message msg =
-    show
-        <| "This uses stuff that is only available in Chrome and Firefox! "
-        ++ "WASD or arrow keys to move, space bar to jump. "
-        ++ msg
+    Element.flow Element.down
+        (List.map (Text.fromString >> Element.leftAligned)
+            [ "This uses stuff that is only available in Chrome and Firefox!"
+            , "WASD keys to move, space bar to jump."
+            , msg
+            ]
+        )

@@ -1,9 +1,67 @@
 module Update exposing (update)
 
-import Ports
 import Model
 import Math.Vector3 as Vector3 exposing (Vec3, toRecord, normalize, vec3, getY, getX, getZ, setY, add, toTuple, i, j, k, scale)
 import Math.Matrix4 exposing (makeRotate, transform)
+import Ports
+
+
+{-| Take a Msg and a Model and return an updated Model
+-}
+update : Model.Msg -> Model.Model -> ( Model.Model, Cmd Model.Msg )
+update msg model =
+    case msg of
+        Model.TextureError err ->
+            ( { model | message = "Error loading texture" }
+            , Cmd.none
+            )
+
+        Model.TextureLoaded texture ->
+            ( { model | maybeTexture = Just texture }
+            , Cmd.none
+            )
+
+        Model.KeyChange keyfunc ->
+            ( { model | keys = keyfunc model.keys }
+            , Cmd.none
+            )
+
+        Model.Resize windowSize ->
+            ( { model | maybeWindowSize = Just windowSize }
+            , Cmd.none
+            )
+
+        Model.MouseMove movement ->
+            ( { model | person = turn movement model.person }
+            , Cmd.none
+            )
+
+        Model.LockRequest wantToBeLocked ->
+            ( { model | wantToBeLocked = wantToBeLocked }
+            , if model.wantToBeLocked == model.isLocked then
+                Cmd.none
+              else if model.wantToBeLocked then
+                Ports.requestPointerLock ()
+              else
+                Ports.exitPointerLock ()
+            )
+
+        Model.LockUpdate isLocked ->
+            ( { model | isLocked = isLocked }
+            , Cmd.none
+            )
+
+        Model.Animate dt ->
+            ( { model
+                | person =
+                    model.person
+                        |> walk (directions model.keys)
+                        |> jump model.keys.space
+                        |> gravity (dt / 500)
+                        |> physics (dt / 500)
+              }
+            , Cmd.none
+            )
 
 
 directions : Model.Keys -> { x : Int, y : Int }
@@ -34,7 +92,7 @@ flatten v =
         normalize (vec3 r.x 0 r.z)
 
 
-turn : ( Int, Int ) -> Model.Person -> Model.Person
+turn : Model.MouseMovement -> Model.Person -> Model.Person
 turn ( dx, dy ) person =
     let
         h' =
@@ -120,59 +178,3 @@ gravity dt person =
                 toRecord person.velocity
         in
             { person | velocity = vec3 v.x (v.y - 2 * dt) v.z }
-
-
-update : Model.Msg -> Model.Model -> ( Model.Model, Cmd Model.Msg )
-update msg model =
-    case msg of
-        Model.TextureError err ->
-            ( { model | message = "Error loading texture" }
-            , Cmd.none
-            )
-
-        Model.TextureLoaded texture ->
-            ( { model | maybeTexture = Just texture }
-            , Cmd.none
-            )
-
-        Model.KeyChange keyfunc ->
-            ( { model | keys = keyfunc model.keys }
-            , Cmd.none
-            )
-
-        Model.Resize windowSize ->
-            ( { model | maybeWindowSize = Just windowSize }
-            , Cmd.none
-            )
-
-        Model.MouseMove movement ->
-            ( { model | person = turn movement model.person }
-            , Cmd.none
-            )
-
-        Model.LockRequest wantToBeLocked ->
-            ( { model | wantToBeLocked = wantToBeLocked }
-            , if model.wantToBeLocked == model.isLocked then
-                Cmd.none
-              else if model.wantToBeLocked then
-                Ports.requestPointerLock ()
-              else
-                Ports.exitPointerLock ()
-            )
-
-        Model.LockUpdate isLocked ->
-            ( { model | isLocked = isLocked }
-            , Cmd.none
-            )
-
-        Model.Animate dt ->
-            ( { model
-                | person =
-                    model.person
-                        |> walk (directions model.keys)
-                        |> jump model.keys.space
-                        |> gravity (dt / 500)
-                        |> physics (dt / 500)
-              }
-            , Cmd.none
-            )

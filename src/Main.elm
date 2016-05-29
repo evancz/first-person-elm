@@ -11,30 +11,47 @@ import Html.App as Html
 import Mouse
 
 
-{-| Regularly sample the keyboard and window to provide a Signal of TimeDelta actions.
+{-| The Elm entrypoint
+-}
+main : Program Model.Args
+main =
+    Html.programWithFlags
+        { init = Model.init
+        , update = Update.update
+        , subscriptions = subscriptions
+        , view = View.view
+        }
+
+
+{-| Subscribe to keychange events.
+
+Ignore anything that isn't an escape, space or WASD key
 -}
 keyChange : Bool -> Keyboard.KeyCode -> Model.Msg
 keyChange on keyCode =
-    (case keyCode of
-        32 ->
-            \k -> { k | space = on }
+    if keyCode == 27 && on then
+        Model.LockRequest False
+    else
+        (case keyCode of
+            32 ->
+                \k -> { k | space = on }
 
-        37 ->
-            \k -> { k | left = on }
+            65 ->
+                \k -> { k | left = on }
 
-        39 ->
-            \k -> { k | right = on }
+            68 ->
+                \k -> { k | right = on }
 
-        38 ->
-            \k -> { k | up = on }
+            87 ->
+                \k -> { k | up = on }
 
-        40 ->
-            \k -> { k | down = on }
+            83 ->
+                \k -> { k | down = on }
 
-        _ ->
-            Basics.identity
-    )
-        |> Model.KeyChange
+            _ ->
+                Basics.identity
+        )
+            |> Model.KeyChange
 
 
 subscriptions : Model.Model -> Sub Model.Msg
@@ -44,7 +61,6 @@ subscriptions model =
     , Keyboard.ups (keyChange False)
     , Window.resizes Model.Resize
     , Ports.isLocked Model.LockUpdate
-    , Keyboard.presses (\keyCode -> Model.LockRequest (keyCode == 27))
     ]
         ++ (if model.isLocked then
                 [ Ports.movement Model.MouseMove ]
@@ -52,15 +68,3 @@ subscriptions model =
                 [ Mouse.clicks (\_ -> Model.LockRequest True) ]
            )
         |> Sub.batch
-
-
-{-| The Elm entrypoint
--}
-main : Program Never
-main =
-    Html.program
-        { init = Model.init
-        , view = View.view
-        , subscriptions = subscriptions
-        , update = Update.update
-        }
