@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"summary": "First Person 3D Navigation in Elm",
-	"repository": "https://github.com/avancz/first-person-elm.git",
+	"repository": "https://github.com/evancz/first-person-elm.git",
 	"license": "BSD3",
 	"source-directories": ["src"],
 	"exposed-modules": [],
